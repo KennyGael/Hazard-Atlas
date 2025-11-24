@@ -1,0 +1,19 @@
+{
+  "name": "hazard-atlas-recall-tool",
+  "version": "0.1.0",
+  "description": "Recall Reporting Tool — local app that fetches openFDA recalls and shows them on a map",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "NODE_ENV=development node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "dotenv": "^16.0.3"
+  }
+}

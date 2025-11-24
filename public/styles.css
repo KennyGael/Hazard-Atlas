@@ -1,0 +1,291 @@
+:root {
+  --bg: #0f1724;
+  --panel: #0b1220;
+  --accent: #ff6b6b;
+  --muted: #9aa4b2;
+  --amber: #ffb84d;
+  --green: #3ddc84;
+  --white: #f8fafc;
+  --glass-1: rgba(255, 255, 255, 0.02);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+main {
+  padding: 18px;
+}
+#controls {
+  margin-bottom: 12px;
+}
+.control-row {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.control {
+  background: linear-gradient(
+    180deg,
+    var(--glass-1),
+    rgba(255, 255, 255, 0.01)
+  );
+  padding: 12px;
+  border-radius: 10px;
+  min-width: 160px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.control label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+input[type="text"],
+input[type="search"],
+select,
+#search {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--white);
+}
+
+/* Do not forcibly style native option popups (system control); keep select readable */
+select {
+  color: var(--white);
+}
+
+/* Ensure dropdown option text is readable in native popups (light background) */
+select option,
+select optgroup {
+  color: #0b1220; /* dark text for native popup options */
+  background: #ffffff; /* force light background for better contrast */
+}
+
+#workspace {
+  display: flex;
+  gap: 14px;
+}
+#map {
+  flex: 1;
+  min-height: 72vh;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+#results {
+  width: 420px;
+  background: linear-gradient(180deg, var(--glass-1), transparent);
+  padding: 16px;
+  border-radius: 10px;
+}
+#results h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+.list {
+  max-height: 68vh;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.item {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.01),
+    rgba(255, 255, 255, 0.006)
+  );
+  cursor: pointer;
+  border-left: 6px solid transparent;
+  transition: transform 0.12s ease, background 0.12s;
+}
+.item:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.03);
+}
+.item .title {
+  font-weight: 700;
+  font-size: 14px;
+}
+.item .meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.item.active {
+  outline: 2px solid rgba(255, 255, 255, 0.04);
+}
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+}
+
+/* classification colors (list vs marker colors intentionally different) */
+.item.class-I {
+  border-left-color: #ff4d4d;
+}
+.item.class-II {
+  border-left-color: #ffb84d;
+}
+.item.class-III {
+  border-left-color: #3ddc84;
+}
+
+.badge.class-I {
+  background: rgba(255, 77, 77, 0.12);
+  color: #ff4d4d;
+}
+.badge.class-II {
+  background: rgba(255, 184, 77, 0.08);
+  color: #ffb84d;
+}
+.badge.class-III {
+  background: rgba(61, 220, 132, 0.08);
+  color: #3ddc84;
+}
+
+#messages {
+  margin-top: 8px;
+  color: var(--amber);
+}
+.banner {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #23272a;
+  color: var(--white);
+  font-weight: 600;
+}
+.banner.hidden {
+  display: none;
+}
+
+.legend {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+.legend .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  display: inline-block;
+}
+.legend .label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-right: 8px;
+}
+
+/* legend dot colors (marker colors) */
+.dot.class-I {
+  background: #ff4d4d;
+}
+.dot.class-II {
+  background: #ffb84d;
+}
+.dot.class-III {
+  background: #3ddc84;
+}
+
+/* recall type pill toggles */
+.type-pills {
+  display: flex;
+  gap: 8px;
+}
+.type-pills label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  color: var(--white);
+  font-weight: 600;
+}
+.type-pills input {
+  position: absolute;
+  clip: rect(0 0 0 0);
+  pointer-events: none;
+}
+.type-pills label svg {
+  opacity: 0.95;
+}
+.type-pills label.active {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.01)
+  );
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* list icon placed left of title — matches marker appearance */
+.list-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.item .title span {
+  vertical-align: middle;
+}
+
+/* small responsive tweaks */
+@media (max-width: 900px) {
+  #workspace {
+    flex-direction: column;
+  }
+  #results {
+    width: 100%;
+  }
+}
+
+/* tidy footer */
+footer {
+  padding: 12px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}

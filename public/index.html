@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hazard ATLAS — Recall Reporting Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Hazard ATLAS — Recall Reporting Tool</h1>
+      <p class="sub">Food & Drug recalls (2020–2024). Maps and unified list.</p>
+    </header>
+
+    <main>
+      <section id="controls">
+        <div class="control-row">
+          <div class="control">
+            <label>Recall Type</label>
+            <div class="type-pills" role="tablist" aria-label="Recall Type">
+              <label>
+                <input type="radio" name="type" value="All" checked />
+                <span>All</span>
+              </label>
+              <label>
+                <input type="radio" name="type" value="Food" />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M7 2v7a2 2 0 0 1-2 2H3v2h2v7h2v-7h2v-2H7V4a2 2 0 0 0-2-2z"
+                    fill="#fff"
+                    opacity="0.9"
+                  />
+                </svg>
+                <span>Food</span>
+              </label>
+              <label>
+                <input type="radio" name="type" value="Drug" />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <rect
+                    x="2"
+                    y="6"
+                    width="20"
+                    height="12"
+                    rx="6"
+                    fill="#fff"
+                    opacity="0.06"
+                  />
+                  <rect x="2" y="6" width="10" height="12" rx="6" fill="#fff" />
+                </svg>
+                <span>Drug</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="classification">Classification</label>
+            <select id="classification">
+              <option value="All">All</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="sort">Sort</label>
+            <select id="sort">
+              <option value="date_desc">Date (Newest → Oldest)</option>
+              <option value="date_asc">Date (Oldest → Newest)</option>
+              <option value="class_desc">Hazard (Class I → Class III)</option>
+              <option value="class_asc">Hazard (Class III → Class I)</option>
+            </select>
+          </div>
+          <div class="control">
+            <label for="limit">Results</label>
+            <select id="limit">
+              <option value="45" selected>45</option>
+              <option value="25">25</option>
+              <option value="100">100</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="messages" role="status" aria-live="polite"></div>
+        <div id="sampleBanner" class="banner hidden">
+          You are viewing sample data (offline fallback).
+        </div>
+        <div class="control-row" style="margin-top: 10px; align-items: center">
+          <div class="control" style="flex: 1; min-width: 240px">
+            <label for="search">Search</label>
+            <input id="search" placeholder="Search product or firm" />
+          </div>
+          <div class="control legend" style="min-width: 220px">
+            <div
+              class="dot class-I"
+              style="
+                width: 14px;
+                height: 14px;
+                border-radius: 7px;
+                margin-right: 6px;
+              "
+            ></div>
+            <div class="label">Class I</div>
+            <div style="width: 14px"></div>
+            <div
+              class="dot class-II"
+              style="
+                width: 14px;
+                height: 14px;
+                border-radius: 7px;
+                margin-right: 6px;
+                margin-left: 10px;
+              "
+            ></div>
+            <div class="label">Class II</div>
+            <div style="width: 14px"></div>
+            <div
+              class="dot class-III"
+              style="
+                width: 14px;
+                height: 14px;
+                border-radius: 7px;
+                margin-right: 6px;
+                margin-left: 10px;
+              "
+            ></div>
+            <div class="label">Class III</div>
+          </div>
+          <div
+            class="control legend"
+            style="
+              min-width: 260px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 8px">
+              <div class="dot class-I"></div>
+              <div class="label">Class I</div>
+              <div style="width: 12px"></div>
+              <div class="dot class-II"></div>
+              <div class="label">Class II</div>
+              <div style="width: 12px"></div>
+              <div class="dot class-III"></div>
+              <div class="label">Class III</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <div title="Food" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M7 2v7a2 2 0 0 1-2 2H3v2h2v7h2v-7h2v-2H7V4a2 2 0 0 0-2-2z"
+                    fill="#fff"
+                    opacity="0.9"
+                  />
+                </svg>
+              </div>
+              <div title="Drug" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <rect
+                    x="2"
+                    y="6"
+                    width="20"
+                    height="12"
+                    rx="6"
+                    fill="#fff"
+                    opacity="0.06"
+                  />
+                  <rect x="2" y="6" width="10" height="12" rx="6" fill="#fff" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="workspace">
+        <div id="map"></div>
+
+        <aside id="results">
+          <h2>Recalls (<span id="count">0</span>)</h2>
+          <div id="list" class="list"></div>
+        </aside>
+      </section>
+    </main>
+
+    <footer>
+      <small>Data source: openFDA. Geocoding: Nominatim / OpenStreetMap.</small>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <script src="app.js"></script>
+  </body>
+</html>
