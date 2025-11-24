@@ -199,22 +199,30 @@
         14,
         "#ffffff"
       )}</span>`;
-      
+
       // Format date nicely
-      const dateStr = rec.raw_report_date 
-        ? rec.raw_report_date.slice(0, 4) + "-" + rec.raw_report_date.slice(4, 6) + "-" + rec.raw_report_date.slice(6, 8)
+      const dateStr = rec.raw_report_date
+        ? rec.raw_report_date.slice(0, 4) +
+          "-" +
+          rec.raw_report_date.slice(4, 6) +
+          "-" +
+          rec.raw_report_date.slice(6, 8)
         : "N/A";
-      
+
       div.innerHTML = `
         <div class="title">${iconHtml}<span>${
         rec.product_description || "—"
       }</span></div>
         <div class="meta">
           <strong>${rec.recalling_firm || "Unknown Firm"}</strong><br/>
-          ${rec.reason_for_recall ? `<small>${rec.reason_for_recall}</small><br/>` : ""}
-          ${dateStr} <span class="badge ${classificationClass(rec.classification)}">${
-        rec.classification || "N/A"
-      }</span>
+          ${
+            rec.reason_for_recall
+              ? `<small>${rec.reason_for_recall}</small><br/>`
+              : ""
+          }
+          ${dateStr} <span class="badge ${classificationClass(
+        rec.classification
+      )}">${rec.classification || "N/A"}</span>
         </div>
       `;
       div.addEventListener("click", () => {
