@@ -1,85 +1,182 @@
-# Hazard Atlas — Recall Reporting Tool
-## Deployment : [wwww.kennygael.tech](https://www.kennygael.tech/)
-A full-stack web application that integrates **two public APIs** to fetch, unify, geocode, and visualize FDA food and drug recalls on an interactive map.
+# 🌍 Hazard Atlas — Recall Reporting Tool
 
-**Assignment Focus:** Demonstrates API integration, data unification, and real-time geocoding using third-party services.
+## 🔗 Live Deployment
+**Production URL:** 👉 https://www.kennygael.tech
+
+This application is deployed behind a **load balancer** that distributes traffic across **two backend web servers** for reliability and scalability.
+
+- **Load Balancer (Public Entry Point):**
+  - https://www.kennygael.tech
+
+- **Backend Servers (behind the load balancer):**
+  - http://web-01.kennygael.tech
+  - http://web-02.kennygael.tech
+
+---
+
+## 📌 Project Overview
+
+Hazard Atlas is a **full-stack web application** that integrates **two public APIs** to fetch, unify, geocode, and visualize **FDA food and drug recalls** on an interactive map.
+
+**Assignment Focus:**  
+Demonstrates API integration, backend data unification, rate-limited geocoding, and production-style deployment using a load-balanced architecture.
+
+---
+
+## 🏗️ Deployment & Infrastructure
+
+### Architecture Overview
+
+```
+
+```
+            ┌────────────────────┐
+            │   Load Balancer     │
+            │ www.kennygael.tech  │
+            └─────────┬──────────┘
+                      │
+      ┌───────────────┴───────────────┐
+      │                               │
+```
+
+┌────────────────────┐        ┌────────────────────┐
+│  web-01 server     │        │  web-02 server     │
+│  Node.js + Express │        │  Node.js + Express │
+│  Serves API + UI   │        │  Serves API + UI   │
+└────────────────────┘        └────────────────────┘
+
+````
+
+### Deployment Details
+
+- Single public entry point via a load balancer
+- Incoming traffic is distributed across two identical backend servers
+- Each backend server runs the same Node.js + Express application
+- Improves availability, fault tolerance, and horizontal scalability
+- Environment variables used for secrets and configuration
+
+---
 
 ## 🎯 APIs Integrated
 
-### 1. **openFDA API** — Recall Data
+### 1. openFDA API — Recall Data
 
-- **Endpoint:** `https://api.fda.gov/`
-- **Data:** Food & Drug recalls (2020–2024)
+- **Base URL:** https://api.fda.gov/
+- **Endpoints:**
+  - `/food/enforcement.json`
+  - `/drug/enforcement.json`
+- **Data Range:** 2020–2024
 - **Features:**
-  - `/food/enforcement.json` — Food recalls
-  - `/drug/enforcement.json` — Drug recalls
-  - Filtering by date range, classification, firm name
-  - Up to 250 records per endpoint (500 total)
-- **Authentication:** Optional API key (free signup at [open.fda.gov](https://open.fda.gov))
-- **Rate Limits:** 240 req/min (or 10,000+ with API key)
+  - Filtering by date, classification, and firm name
+  - Up to 250 records per request
+- **Authentication:** Optional API key
+- **Rate Limits:** 240 requests/min (higher with API key)
 
-### 2. **Nominatim (OpenStreetMap)** — Geocoding
+---
 
-- **Endpoint:** `https://nominatim.openstreetmap.org/`
-- **Function:** Converts addresses → latitude/longitude coordinates
+### 2. Nominatim (OpenStreetMap) — Geocoding
+
+- **Base URL:** https://nominatim.openstreetmap.org/
+- **Purpose:** Converts addresses to latitude and longitude
 - **Features:**
-  - Free, open-source geocoding
-  - Client-side caching in browser localStorage
-  - Polite usage (1.1s rate limit between requests)
-- **Authentication:** None required
-- **Rate Limits:** 1 request/second (free tier)
+  - Free and open-source
+  - No authentication required
+- **Rate Limits:** ~1 request per second
 
-## 🚀 Getting Started
+---
+
+## 🚀 Getting Started (Local Development)
 
 ### 1. Install Dependencies
 
 ```bash
-cd /path/to/Hazard-Atlas
 npm install
-```
+````
 
-### 2. (Optional) Set an openFDA API key to increase rate limits / reliability
+### 2. (Optional) Set openFDA API Key
 
 ```bash
 export OPENFDA_API_KEY=your_key_here
 ```
 
-Alternatively, create a local `.env` file in the project root with the key (do not commit this file):
+Or create a `.env` file (do not commit):
 
-```bash
-# .env (example)
+```env
 OPENFDA_API_KEY=your_key_here
 ```
 
-Note: The server loads `.env` automatically when present using `dotenv`.
+> The server automatically loads environment variables using `dotenv`.
 
-### 3. Start the server
+---
+
+### 3. Start the Application
 
 ```bash
 npm start
-# then open http://localhost:3000 in your browser
 ```
 
-## Notes and design choices
+Open in browser:
 
-- Backend: `index.js` exposes `/api/recalls` which requests up to 1000 records each from the Food and Drug openFDA enforcement endpoints in the date range 2020-01-01 → 2024-12-31. The backend tags each record with `type: 'Food' | 'Drug'` and returns a unified array.
-- API key: If you have an `OPENFDA_API_KEY` it will be appended to the openFDA requests from the server; this keeps keys out of the frontend.
-- Frontend: `public/app.js` fetches the unified data and performs geocoding client-side using Nominatim. Geocoding uses a simple queue with an approx 1.1s interval between requests and caches results in `localStorage` under the key `hazardatlas_geocache_v1` to avoid repeat requests.
-- Rate limits: Nominatim and open data sources have usage policies. For large volumes, consider adding a server-side geocoding cache or using a commercial geocoding API with an API key.
+```
+http://localhost:3000
+```
 
-## UX behavior
+---
 
-- Filter by recall type (All / Food Only / Drug Only).
-- Filter by classification (Class I / II / III where available).
-- Sort by date or hazard level.
-- Click a list item to focus and open the related map marker.
+## ⚙️ Backend Design Notes
 
-## Errors
+* **Endpoint:** `/api/recalls`
+* Fetches recall data from both:
 
-- API failures and geocoding errors are displayed in the UI status area.
+  * Food enforcement reports
+  * Drug enforcement reports
+* Normalizes both datasets into a unified response
+* Adds a `type` field (`Food` or `Drug`)
+* Date range: `2020-01-01 → 2024-12-31`
+* API key (if provided) is appended server-side to protect credentials
 
-## Next improvements (optional)
+---
 
-- Server-side geocoding with a persistent cache (file or DB).
-- Batch/pagination handling if results exceed 1000 per endpoint.
-- Export filtered results as CSV.
+## 🗺️ Frontend & Geocoding Logic
+
+* Frontend fetches unified recall data from `/api/recalls`
+* Client-side geocoding performed using Nominatim
+* Implements:
+
+  * Request queue with ~1.1 second delay
+  * Local caching in browser storage
+* Cached under:
+
+```
+localStorage["hazardatlas_geocache_v1"]
+```
+
+---
+
+## 🧭 User Experience Features
+
+* Filter recalls by type (All / Food / Drug)
+* Filter by classification (Class I / II / III)
+* Sort by recall date or hazard severity
+* Interactive map:
+
+  * Clicking a recall focuses the corresponding map marker
+
+---
+
+## ❗ Error Handling
+
+* API failures
+* Network errors
+* Geocoding issues
+
+Errors are displayed clearly in the UI status area.
+
+---
+
+## 🔮 Future Improvements
+
+* Server-side geocoding with persistent cache
+* Pagination for large result sets
+* CSV export of filtered data
+* Monitoring, logging, and health checks
